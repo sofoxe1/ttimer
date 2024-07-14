@@ -51,13 +51,15 @@ func AfterWallClock(d time.Duration) <-chan time.Time {
 
 type Timer struct {
 	Title    string
-	AutoQuit bool
+	AutoQuit bool	
 	Debug    bool
 	duration time.Duration
 	end      time.Time
 	left     time.Duration
 	status   string
 	finished bool
+	Binds    map[string]func()
+	LiveDescription *string
 }
 
 func (t *Timer) Start(d time.Duration) {
@@ -125,6 +127,7 @@ func (t *Timer) update() {
 		t.left = time.Duration(floorSeconds) * time.Second
 		endTime := time.Now().Add(t.left)
 		t.status = Sprintf("%v", t.left)
+		t.status += "\n"+*t.LiveDescription
 		// Don't duplicate the title if this is already an end time based timer
 		if !(strings.Contains(t.Title, "a") || strings.Contains(t.Title, "p")) {
 			t.status += " " + shortTimeString(endTime)
@@ -156,7 +159,6 @@ func (t *Timer) CountDown(opts ...countdownOption) {
 	for _, o := range opts {
 		o(&params)
 	}
-
 	// init and close
 	err := ui.Init()
 	mustBeNil(err)
@@ -198,6 +200,10 @@ func (t *Timer) CountDown(opts ...countdownOption) {
 			case "<Resize>":
 				resize := e.Payload.(ui.Resize)
 				p.SetRect(termX, termY, resize.Width, resize.Height)
+			default:
+				if func_, ok := t.Binds[e.ID]; ok {
+					go func_()
+				}
 			}
 			if params.eventHandler != nil {
 				params.eventHandler(e.ID)
