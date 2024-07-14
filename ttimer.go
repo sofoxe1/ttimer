@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/drgrib/ttimer/agent"
-	"github.com/drgrib/ttimer/parse"
+	"github.com/sofoxe1/ttimer/agent"
+	"github.com/sofoxe1/ttimer/parse"
 )
 
 //////////////////////////////////////////////

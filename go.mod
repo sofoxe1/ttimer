@@ -1,4 +1,4 @@
-module github.com/drgrib/ttimer
+module github.com/sofoxe1/ttimer
 
 go 1.13
 
